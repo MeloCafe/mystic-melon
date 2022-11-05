@@ -15,6 +15,7 @@ export default function Home() {
   return (
     <div className="w-full h-full min-h-screen" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
       <StyledLink href="/new-proposal">+ New proposal</StyledLink>
+      <StyledLink href="/new-vault">+ New vault</StyledLink>
     </div>
   )
 }
