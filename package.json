@@ -11,6 +11,7 @@
     "abi": "npx typechain --target=ethers-v5 'abis/*.json'"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@types/node": "18.11.9",
@@ -21,6 +22,7 @@
     "eslint": "8.26.0",
     "eslint-config-next": "13.0.2",
     "ethers": "^5.7.2",
+    "graphql": "^16.6.0",
     "next": "13.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",

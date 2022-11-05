@@ -1,3 +1,5 @@
+import { BigNumberish } from 'ethers'
+
 export type NftDetails = {
   address: string
   name: string
@@ -6,4 +8,12 @@ export type NftDetails = {
   type: string
   description?: string
   imageUrl?: string
+}
+
+export type Vault = {
+  collection: string
+  executed: BigNumberish
+  proposed: BigNumberish
+  id: string
+  name: string
 }
