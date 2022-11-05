@@ -37,11 +37,10 @@ export default function NewVault() {
         const res = await fetch(`https://api.melo.cafe/collection?address=${form.nftContractAddress}`)
         const details = await res.json()
         setNftDetails(details.collection)
-
-        setNftDetailsLoading(false)
       } catch (e) {
-        setNftDetailsLoading(false)
+        // TODO: handle error??
       }
+      setNftDetailsLoading(false)
     }
 
     fetchNftDetails()
