@@ -8,7 +8,7 @@ export function HeaderNav() {
   return (
     <Container>
       <Left>
-        <Title>🍈 Melo Cafe</Title>
+        <Title href="/">🍈 Melo Cafe</Title>
       </Left>
       <Right>
         <StyledLink href="/">Proposals</StyledLink>
@@ -62,7 +62,11 @@ const StyledLink = styled(Link)`
   }
 `
 
-const Title = styled.div`
+const Title = styled(Link)`
   font-size: 32px;
   font-weight: 600;
+
+  &::selection {
+    background: ${colors.green300};
+  }
 `
