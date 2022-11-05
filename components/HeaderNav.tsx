@@ -27,6 +27,11 @@ const Container = styled.div`
 
   padding: 48px;
   color: ${colors.green400};
+
+  @media only screen and (max-width: 900px) {
+    flex-flow: column;
+    justify-content: center;
+  }
 `
 
 const Left = styled.div``
@@ -50,6 +55,12 @@ const Right = styled.div`
   button {
     transition-duration: 0.2s;
   }
+
+  @media only screen and (max-width: 900px) {
+    flex-flow: column;
+    justify-content: center;
+    gap: 4px;
+  }
 `
 
 const StyledLink = styled(Link)`
@@ -63,6 +74,10 @@ const StyledLink = styled(Link)`
   &:focus {
     background-color: ${colors.green300};
     outline: none;
+  }
+
+  @media only screen and (max-width: 900px) {
+    padding: 4px;
   }
 `
 

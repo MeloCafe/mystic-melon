@@ -88,7 +88,7 @@ const FormContainer = styled.div`
   align-items: stretch;
   align-self: center;
   gap: 12px;
-  width: 500px;
+  max-width: 500px;
   color: ${colors.green400};
   padding-bottom: 64px;
 
@@ -98,6 +98,10 @@ const FormContainer = styled.div`
     &::selection {
       background: ${colors.green300};
     }
+  }
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
   }
 `
 

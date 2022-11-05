@@ -62,6 +62,7 @@ const Links = styled.div`
   @media only screen and (max-width: 900px) {
     flex-flow: column;
     gap: 24px;
+    margin: 32px 12px 64px 12px;
   }
 `
 
