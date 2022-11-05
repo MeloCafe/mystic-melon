@@ -3,7 +3,7 @@ import Head from 'next/head'
 const Meta: React.FC = () => {
   return (
     <Head>
-      <title>secret melon</title>
+      <title>Melo Cafe</title>
       <meta name="description" content="don't tell anyone about the melons" />
       <link rel="shortcut icon" href="/favicon.ico" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
