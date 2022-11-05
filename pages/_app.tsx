@@ -25,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
           walletConnectName: 'WalletConnect',
           embedGoogleFonts: true,
         }}
+        theme="soft"
         customTheme={{
           '--ck-font-family': 'Fredoka',
           '--ck-modal-heading-font-weight': 400,
