@@ -26,4 +26,8 @@
     src: url('/fonts/Fredoka-Bold.ttf') format('truetype');
     font-weight: 700;
   }
+
+  body {
+    background-color: #f3fef6;
+  }
 }
