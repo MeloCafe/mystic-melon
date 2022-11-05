@@ -1,6 +1,7 @@
-import { ConnectKitButton } from 'connectkit'
 import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
+
+import { HeaderNav } from '../components/HeaderNav'
 
 export default function Home() {
   const { address } = useAccount()
@@ -10,10 +11,8 @@ export default function Home() {
   }, [address])
 
   return (
-    <div className="w-full h-full min-h-screen flex flex-col items-center justify-center">
-      <div className="">
-        <ConnectKitButton theme="rounded" />
-      </div>
+    <div>
+      <HeaderNav />
     </div>
   )
 }
