@@ -1,20 +1,21 @@
 import styled from '@emotion/styled'
-import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { isAddress } from 'ethers/lib/utils'
+import { useEffect, useState } from 'react'
+import { RotatingLines } from 'react-loader-spinner'
 
+import NftDetails from '../components/NftDetails'
 import Input from '../components/TextInput'
 import { colors } from '../styles/colors'
+import { NftDetails as NftDetailsType } from '../types'
 
-export default function NewProposal() {
-  const { address } = useAccount()
-
+export default function NewVault() {
   const [form, setForm] = useState({
     title: '',
     nftContractAddress: '',
-    description: '',
-    transactionTo: '',
-    transactionValue: '',
   })
+
+  const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
+  const [nftDetailsLoading, setNftDetailsLoading] = useState(false)
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
@@ -23,19 +24,40 @@ export default function NewProposal() {
     }))
   }
 
-  const submitDisabled =
-    !form.title || !form.nftContractAddress || !form.description || !form.transactionTo || !form.transactionValue
+  useEffect(() => {
+    if (!isAddress(form.nftContractAddress)) {
+      setNftDetails(null)
+      return
+    }
 
+    async function fetchNftDetails() {
+      try {
+        setNftDetailsLoading(true)
+
+        const res = await fetch(`https://api.melo.cafe/collection?address=${form.nftContractAddress}`)
+        const details = await res.json()
+        setNftDetails(details.collection)
+
+        setNftDetailsLoading(false)
+      } catch (e) {
+        setNftDetailsLoading(false)
+      }
+    }
+
+    fetchNftDetails()
+  }, [form.nftContractAddress])
+
+  const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN'
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
       <FormContainer>
-        <Title>New proposal</Title>
+        <Title>New vault</Title>
         <div>
-          Title:
-          <Input type="input" placeholder="Very cool proposal" value={form.title} onChange={onFormChange('title')} />
+          Vault name:
+          <Input type="input" placeholder="Cool cat vault" value={form.title} onChange={onFormChange('title')} />
         </div>
         <div>
-          Only owners of this NFT address can vote:
+          This vault is for owners of this NFT collection:
           <Input
             type="input"
             placeholder="0x123..."
@@ -43,34 +65,10 @@ export default function NewProposal() {
             onChange={onFormChange('nftContractAddress')}
           />
         </div>
-        <div>
-          Description:
-          <Input
-            type="textarea"
-            placeholder="Very cool description here"
-            value={form.description}
-            onChange={onFormChange('description')}
-          />
-        </div>
-        <div>
-          This is a proposal to send funds to:
-          <Input
-            type="input"
-            placeholder="0x123.."
-            value={form.transactionTo}
-            onChange={onFormChange('transactionTo')}
-          />
-        </div>
-        <div>
-          Amount to send:
-          <Input
-            type="input"
-            placeholder="0.01"
-            value={form.transactionValue}
-            onChange={onFormChange('transactionValue')}
-            label="ETH"
-          />
-        </div>
+        {nftDetailsLoading && (
+          <RotatingLines strokeColor={colors.green400} strokeWidth="5" animationDuration="0.75" width="25" />
+        )}
+        {nftDetails && <NftDetails details={nftDetails} />}
         <Submit disabled={submitDisabled} onClick={() => null}>
           Submit
         </Submit>
