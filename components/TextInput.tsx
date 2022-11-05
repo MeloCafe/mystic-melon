@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
-import { ChangeEventHandler } from 'react'
+import { ChangeEventHandler, ReactNode } from 'react'
 
 import { colors } from '../styles/colors'
 
 interface Props {
   value: string
-  label?: string
+  label?: ReactNode
   type?: 'textarea' | 'input'
   onChange: ChangeEventHandler<any>
   placeholder?: string

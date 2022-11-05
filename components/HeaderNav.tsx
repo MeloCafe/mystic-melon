@@ -11,8 +11,8 @@ export function HeaderNav() {
         <Title href="/">🍈 Melo Cafe</Title>
       </Left>
       <Right>
+        <StyledLink href="/">Vaults</StyledLink>
         <StyledLink href="/">Proposals</StyledLink>
-        <StyledLink href="/">Votes</StyledLink>
         <ConnectKitButton theme="rounded" />
       </Right>
     </Container>
@@ -27,6 +27,11 @@ const Container = styled.div`
 
   padding: 48px;
   color: ${colors.green400};
+
+  @media only screen and (max-width: 900px) {
+    flex-flow: column;
+    justify-content: center;
+  }
 `
 
 const Left = styled.div``
@@ -39,13 +44,22 @@ const Right = styled.div`
   font-size: 24px;
 
   // connect kit button
-  button:hover {
+  button:hover,
+  button:focus,
+  button:focus-visible {
     transform: scale(1.05);
     transition-duration: 0.2s;
+    outline: none !important;
   }
 
   button {
     transition-duration: 0.2s;
+  }
+
+  @media only screen and (max-width: 900px) {
+    flex-flow: column;
+    justify-content: center;
+    gap: 4px;
   }
 `
 
@@ -57,16 +71,17 @@ const StyledLink = styled(Link)`
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 250ms;
 
-  &:hover {
+  &:focus {
     background-color: ${colors.green300};
+    outline: none;
+  }
+
+  @media only screen and (max-width: 900px) {
+    padding: 4px;
   }
 `
 
 const Title = styled(Link)`
   font-size: 32px;
   font-weight: 600;
-
-  &::selection {
-    background: ${colors.green300};
-  }
 `
