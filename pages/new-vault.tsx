@@ -63,11 +63,17 @@ export default function NewVault() {
             placeholder="0x123..."
             value={form.nftContractAddress}
             onChange={onFormChange('nftContractAddress')}
+            label={
+              <RotatingLines
+                visible={nftDetailsLoading}
+                strokeColor={colors.green400}
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="25"
+              />
+            }
           />
         </div>
-        {nftDetailsLoading && (
-          <RotatingLines strokeColor={colors.green400} strokeWidth="5" animationDuration="0.75" width="25" />
-        )}
         {nftDetails && <NftDetails details={nftDetails} />}
         <Submit disabled={submitDisabled} onClick={() => null}>
           Submit
