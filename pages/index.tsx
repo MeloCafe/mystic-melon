@@ -75,9 +75,11 @@ const StyledLink = styled(Link)`
   color: ${colors.green400};
   border-radius: 25px;
 
-  &:hover {
+  &:hover,
+  &:focus {
     transform: scale(1.05);
     transition-duration: 0.2s;
+    outline: none;
   }
 
   transition-duration: 0.2s;

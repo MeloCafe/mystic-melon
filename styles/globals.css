@@ -31,7 +31,8 @@
     background-color: #f3fef6;
   }
 
-  div::selection {
+  div::selection,
+  a::selection {
     background: #ddf5e2;
   }
 
