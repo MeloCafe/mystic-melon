@@ -89,6 +89,7 @@ const FormContainer = styled.div`
   align-self: center;
   gap: 12px;
   max-width: 500px;
+  width: 60%;
   color: ${colors.green400};
   padding-bottom: 64px;
 
