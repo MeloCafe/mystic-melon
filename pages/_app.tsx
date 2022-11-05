@@ -4,6 +4,7 @@ import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 import type { AppProps } from 'next/app'
 import { createClient, WagmiConfig } from 'wagmi'
 
+import { HeaderNav } from '../components/HeaderNav'
 import Meta from '../components/Meta'
 import { colors } from '../styles/colors'
 
@@ -36,6 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
         }}
       >
         <Meta />
+        <HeaderNav />
         <Component {...pageProps} />
       </ConnectKitProvider>
     </WagmiConfig>

@@ -8,7 +8,7 @@ export function HeaderNav() {
   return (
     <Container>
       <Left>
-        <Title>🍈 Secret Melon</Title>
+        <Title>🍈 Melo Cafe</Title>
       </Left>
       <Right>
         <StyledLink href="/">Proposals</StyledLink>
