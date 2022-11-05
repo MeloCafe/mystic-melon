@@ -31,6 +31,10 @@
     background-color: #f3fef6;
   }
 
+  div::selection {
+    background: #ddf5e2;
+  }
+
   button,
   a {
     cursor: pointer;
