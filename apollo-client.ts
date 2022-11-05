@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 
 const apolloClient = new ApolloClient({
-  uri: 'https://countries.trevorblades.com',
+  uri: 'https://api.thegraph.com/subgraphs/name/bswags/furtive-fig',
   cache: new InMemoryCache(),
 })
 
