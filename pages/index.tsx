@@ -11,7 +11,7 @@ export default function Home() {
   }, [address])
 
   return (
-    <div>
+    <div className="w-full h-full min-h-screen">
       <HeaderNav />
     </div>
   )

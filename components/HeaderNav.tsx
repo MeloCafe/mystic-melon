@@ -52,10 +52,13 @@ const Right = styled.div`
 const StyledLink = styled(Link)`
   cursor: pointer;
   padding: 8px 16px;
+  border-radius: 20px;
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 250ms;
 
   &:hover {
     background-color: ${colors.green300};
-    border-radius: 20px;
   }
 `
 
