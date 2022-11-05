@@ -30,4 +30,9 @@
   body {
     background-color: #f3fef6;
   }
+
+  button,
+  a {
+    cursor: pointer;
+  }
 }
