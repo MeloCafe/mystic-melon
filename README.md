@@ -1,6 +1,8 @@
 # ETH SF Hackathon project
 
-Hi all this is the Melo Cafe's submission for Eth SF.
+Hi all this is the Melo Cafe team's submission for Eth SF.
+
+[melo.cafe](https://melo.cafe)
 
 ### Polygon Sponsor prize submission details
 
@@ -23,6 +25,8 @@ This project uses The Graph to index proposals and vaults created on Melo Cafe~
 ### IPFS sponsor prize submission details
 
 This project uses web3.storage to host description texts on MeloCafe proposals.
+
+---
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 

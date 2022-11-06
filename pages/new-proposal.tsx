@@ -62,7 +62,6 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
         })
 
         await res.wait()
-        console.log('res', res)
       } catch (e) {
         setSubmissionError(true)
       }
