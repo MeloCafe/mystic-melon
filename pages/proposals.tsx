@@ -8,27 +8,46 @@ import { Proposal } from '../types'
 
 export default function Proposals({ proposals }: { proposals: Proposal[] }) {
   return (
-    <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
+    <div
+      className="w-full h-full min-h-screen flex flex-col"
+      style={{ paddingLeft: '48px', paddingRight: '48px', gap: '12px' }}
+    >
       {proposals.map((proposal, i) => {
         return (
-          <StyledLink key={proposal.id} href={`/proposal/${proposal.id}`}>
-            <div>
-              {i + 1}. {proposal.title}
-            </div>
-          </StyledLink>
+          <ProposalItem key={proposal.id}>
+            <StyledLink href={`/proposal/${proposal.id}`}>
+              <div>
+                {i + 1}. {proposal.title}
+              </div>
+            </StyledLink>
+            <VaultLabel>{proposal.vault.name}</VaultLabel>
+          </ProposalItem>
         )
       })}
     </div>
   )
 }
 
+const ProposalItem = styled.div`
+  display: flex;
+  flex-flow: row;
+  gap: 8px;
+  align-items: center;
+`
+
 const StyledLink = styled(Link)`
   color: ${colors.green400};
-  align-self: flex-start;
 
   &:hover {
     color: ${colors.green300};
   }
+`
+
+const VaultLabel = styled.div`
+  background-color: ${colors.gray100};
+  color: ${colors.gray400};
+  padding: 2px 4px;
+  border-radius: 5px;
 `
 
 export async function getServerSideProps() {
