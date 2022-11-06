@@ -172,11 +172,11 @@ export default function Proposal({
       <VaultLabel href={`/vault/${proposal.vault.id}`}>{proposal.vault.name}</VaultLabel>
 
       <Title>{proposal.title}</Title>
-      {eligibleVoters && numVotes !== null && (
+      {eligibleVoters && numVotes !== null ? (
         <div className="text-center text-lg">
           {numVotes ?? 0}/{eligibleVoters} votes
         </div>
-      )}
+      ) : null}
       <div className="max-w-prose text-center">{description}</div>
       <div className="text-lg mt-6">Transactions</div>
       <div className="mt-4">
@@ -202,11 +202,11 @@ export default function Proposal({
         ) : !proposalExecuted ? (
           <ConnectKitButton label="Connect to vote" theme="rounded" />
         ) : null}
-        {numVotes !== null && eligibleVoters && numVotes / eligibleVoters > 0.5 && (
+        {numVotes !== null && eligibleVoters && numVotes / eligibleVoters > 0.5 ? (
           <ExecuteButton disabled={executing || proposalExecuted} className="w-full" onClick={executeProposal}>
             {executing ? 'Executing...' : 'Execute proposal!'}
           </ExecuteButton>
-        )}
+        ) : null}
       </div>
     </div>
   )
