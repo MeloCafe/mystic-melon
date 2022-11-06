@@ -1,11 +1,12 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { isAddress } from 'ethers/lib/utils'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSigner } from 'wagmi'
 
 import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
+import { uploadText } from '../lib/ipfs'
 import { colors } from '../styles/colors'
 import { Vault } from '../types'
 
@@ -31,6 +32,16 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
   const handleOptionChange = (event: any) => {
     setSelectedVault(event.target.value)
   }
+
+  const onUpload = useCallback(async () => {
+    // Tina here is upload stuff :D
+    // try {
+    //   const stuff = await uploadText('pls i must hear abt the melons')
+    //   console.info(stuff)
+    // } catch (err) {
+    //   console.error('Failed to upload to IPFS', err)
+    // }
+  }, [])
 
   const submitDisabled =
     !form.title ||
@@ -89,7 +100,7 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
             label="ETH"
           />
         </div>
-        <Submit disabled={submitDisabled} onClick={() => null}>
+        <Submit disabled={submitDisabled} onClick={onUpload}>
           {signer ? 'Submit' : 'Connect your wallet'}
         </Submit>
       </FormContainer>
