@@ -1,3 +1,29 @@
+# ETH SF Hackathon project
+
+Hi all this is the Melo Cafe's submission for Eth SF.
+
+### Polygon Sponsor prize submission details
+
+_best UX category_
+This website employs some UX best practices that hopefully make the Melo Cafe interface a very delightful experience!
+
+- Cute branding & colorful design system
+- Intuitive page flows
+- Clear, simple language
+- Follows accessibility guidelines
+- Forms have user input validation and prevents users from creating faulty transactions
+
+_best Developer Tool or DAO Tooling_
+Melo Cafe enables holders of an NFT or token to anonymously vote on proposals on-chain, which enables a different style of collaboration not yet seen with DAOs.
+
+### The Graph sponsor prize submission details
+
+This project uses The Graph to index proposals and vaults created on Melo Cafe~
+
+### IPFS sponsor prize submission details
+
+This project uses web3.storage to host description texts on MeloCafe proposals.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

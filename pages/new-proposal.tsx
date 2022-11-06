@@ -48,13 +48,10 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
       try {
         setSubmitting(true)
         const ipfsRes = await uploadText(form.description)
-        console.log('ipfsRes', ipfsRes)
         const vaultContract = getVaultContract(signer, selectedVault)
         const currentBlock = await provider.getBlockNumber()
-        console.log('currentBlock', currentBlock)
 
         const etherValue = parseEther(form.transactionValue).toString()
-        console.log('etherValue', etherValue)
         const res = await vaultContract.propose({
           title: form.title,
           descriptionHash: ipfsRes.cid,
