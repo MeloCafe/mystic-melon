@@ -6,7 +6,7 @@ Hi all this is the Melo Cafe team's submission for Eth SF.
 
 ### Polygon Sponsor prize submission details
 
-_best UX category_
+**best UX category**
 This website employs some UX best practices that hopefully make the Melo Cafe interface a very delightful experience!
 
 - Cute branding & colorful design system
@@ -15,7 +15,7 @@ This website employs some UX best practices that hopefully make the Melo Cafe in
 - Follows accessibility guidelines
 - Forms have user input validation and prevents users from creating faulty transactions
 
-_best Developer Tool or DAO Tooling_
+**best Developer Tool or DAO Tooling**
 Melo Cafe enables holders of an NFT or token to anonymously vote on proposals on-chain, which enables a different style of collaboration not yet seen with DAOs.
 
 ### The Graph sponsor prize submission details
