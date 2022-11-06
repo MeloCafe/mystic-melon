@@ -86,7 +86,7 @@ export default function Proposal({
     } else {
       setStatusMessage('Error submitting vote! Please try again.')
     }
-  }, [proposal, address])
+  }, [proposal, address, signMessageAsync])
 
   if (!proposal || !transactions) {
     return (
@@ -105,7 +105,7 @@ export default function Proposal({
       <VaultDetails>{proposal.vault.name}</VaultDetails>
 
       <Title className="mt-8">{proposal.title}</Title>
-      <div className="max-w-prose ">{description}</div>
+      <div className="max-w-prose text-center">{description}</div>
       <div className="text-lg mt-6">Transactions</div>
       <div className="mt-4">
         {transactions.map((tx, i) => (
