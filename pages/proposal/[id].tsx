@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAccount, useSignMessage } from 'wagmi'
+import { chain, useAccount, useNetwork, useSignMessage } from 'wagmi'
 
 import apolloClient from '../../apollo-client'
 import { getStorageUrl } from '../../lib/ipfs'
@@ -25,9 +25,24 @@ export default function Proposal({
     | undefined
 }) {
   const [description, setDescription] = useState('')
+  const [eligibleVoters, setEligibleVoters] = useState(null)
+  const chainInfo = useNetwork().chain ?? chain.goerli
 
   useEffect(() => {
-    if (proposal?.description) {
+    async function prepareInfo() {
+      if (!proposal) return
+
+      const nftRes = await fetch(
+        `https://api.melo.cafe/collection?address=${proposal.vault.collection}&chainId=${chainInfo.id}`
+      )
+
+      const {
+        collection: { supply },
+      } = await nftRes.json()
+      setEligibleVoters(supply)
+
+      if (!proposal.description) return
+
       const url = getStorageUrl(proposal.description)
       fetch(url)
         .then((res) => {
@@ -38,7 +53,9 @@ export default function Proposal({
         })
         .then(setDescription)
     }
-  }, [proposal])
+
+    prepareInfo()
+  }, [proposal, chainInfo.id])
 
   const { address } = useAccount()
 
@@ -96,6 +113,8 @@ export default function Proposal({
     )
   }
 
+  console.log('eligibleVoters', eligibleVoters)
+
   return (
     <div
       className="w-full h-full min-h-screen flex flex-col items-center"
@@ -105,6 +124,7 @@ export default function Proposal({
       <VaultDetails href={`/vault/${proposal.vault.id}`}>{proposal.vault.name}</VaultDetails>
 
       <Title className="mt-8">{proposal.title}</Title>
+      {eligibleVoters && <div className="text-center">X/{eligibleVoters} votes</div>}
       <div className="max-w-prose text-center">{description}</div>
       <div className="text-lg mt-6">Transactions</div>
       <div className="mt-4">
