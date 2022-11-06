@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 
-import { ConnectKitProvider } from 'connectkit'
+import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 import type { AppProps } from 'next/app'
 import { chain, configureChains, createClient, defaultChains, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
@@ -15,15 +15,19 @@ if (!alchemyId) {
   throw new Error('Must specify an Alchemy ID')
 }
 
-const { provider } = configureChains(
+const { chains, provider } = configureChains(
   [...defaultChains, chain.goerli],
   [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
 )
 
-const client = createClient({
-  autoConnect: true,
-  provider,
-})
+const client = createClient(
+  getDefaultClient({
+    appName: 'melo cafe',
+    alchemyId,
+    chains,
+    provider,
+  })
+)
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
