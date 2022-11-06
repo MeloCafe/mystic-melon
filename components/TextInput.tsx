@@ -9,13 +9,14 @@ interface Props {
   type?: 'textarea' | 'input'
   onChange: ChangeEventHandler<any>
   placeholder?: string
+  inputType?: 'number'
 }
 
-export default function Input({ type = 'input', label, ...rest }: Props) {
+export default function Input({ type = 'input', label, inputType, ...rest }: Props) {
   return (
     <Container>
       {type === 'textarea' && <textarea rows={10} {...rest} />}
-      {type === 'input' && <input {...rest} />}
+      {type === 'input' && <input type={inputType} {...rest} />}
       {label && <div style={{ paddingLeft: '8px', paddingRight: '8px' }}>{label}</div>}
     </Container>
   )

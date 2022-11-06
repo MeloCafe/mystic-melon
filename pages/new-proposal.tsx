@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
+import { isAddress } from 'ethers/lib/utils'
 import { useState } from 'react'
 
 import apolloClient from '../apollo-client'
@@ -10,7 +11,6 @@ import { Vault } from '../types'
 export default function NewProposal({ vaults }: { vaults: Vault[] }) {
   const [form, setForm] = useState({
     title: '',
-    nftContractAddress: '',
     description: '',
     transactionTo: '',
     transactionValue: '',
@@ -30,7 +30,7 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
   }
 
   const submitDisabled =
-    !form.title || !form.nftContractAddress || !form.description || !form.transactionTo || !form.transactionValue
+    !form.title || !selectedVault || !form.description || !isAddress(form.transactionTo) || !form.transactionValue
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
@@ -74,6 +74,7 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
           Amount to send:
           <Input
             type="input"
+            inputType="number"
             placeholder="0.01"
             value={form.transactionValue}
             onChange={onFormChange('transactionValue')}
