@@ -6,10 +6,8 @@ import { RotatingLines } from 'react-loader-spinner'
 import { chain, useNetwork } from 'wagmi'
 
 import apolloClient from '../../apollo-client'
-import NftDetails from '../../components/NftDetails'
 import { colors } from '../../styles/colors'
 import { NftDetails as NftDetailsType, Vault as VaultType } from '../../types'
-import Proposals from '../proposals'
 
 export default function Vault({ vault }: { vault: VaultType }) {
   const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
