@@ -26,7 +26,7 @@ This project uses The Graph to index proposals and vaults created on Melo Cafe~
 
 This project uses web3.storage to host description texts on MeloCafe proposals.
 
-[Example usage](https://github.com/MeloCafe/secret-melon/blob/main/pages/new-proposal.tsx#L50) of web3.storage where we upload Proposal descriptions to IPFS. We get the `cid` response and add that to the transaction to be submitted on-chain.
+[Example usage](https://github.com/MeloCafe/mystic-melon/blob/main/pages/new-proposal.tsx#L50) of web3.storage where we upload Proposal descriptions to IPFS. We get the `cid` response and add that to the transaction to be submitted on-chain.
 
 ---
 

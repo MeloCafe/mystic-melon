@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 
@@ -13,7 +14,7 @@ export default function Proposal({
   proposal,
   transactions,
 }: {
-  proposal: ProposalType | undefined
+  proposal?: ProposalType
   transactions:
     | {
         to: string
@@ -51,8 +52,7 @@ export default function Proposal({
   const [statusMessage, setStatusMessage] = useState('')
 
   const submitVote = useCallback(async () => {
-    if (!proposal) return
-    if (!address) return
+    if (!proposal || !address) return
 
     setStatusMessage('')
 
@@ -102,7 +102,7 @@ export default function Proposal({
       style={{ paddingLeft: '48px', paddingRight: '48px' }}
     >
       <div className="mb-2">Proposal</div>
-      <VaultDetails>{proposal.vault.name}</VaultDetails>
+      <VaultDetails href={`/vault/${proposal.vault.id}`}>{proposal.vault.name}</VaultDetails>
 
       <Title className="mt-8">{proposal.title}</Title>
       <div className="max-w-prose text-center">{description}</div>
@@ -166,7 +166,7 @@ const Title = styled.div`
   color: ${colors.green400};
 `
 
-const VaultDetails = styled.div`
+const VaultDetails = styled(Link)`
   display: flex;
   flex-flow: column;
   align-items: center;
