@@ -198,9 +198,9 @@ export default function Proposal({
           <VoteButton className="w-full" disabled={proposalExecuted} onClick={submitVote}>
             Vote
           </VoteButton>
-        ) : (
+        ) : !proposalExecuted ? (
           <ConnectKitButton label="Connect to vote" theme="rounded" />
-        )}
+        ) : null}
         {numVotes !== null && eligibleVoters && numVotes / eligibleVoters > 0.5 && (
           <ExecuteButton disabled={executing || proposalExecuted} className="w-full" onClick={executeProposal}>
             {executing ? 'Executing...' : 'Execute proposal!'}

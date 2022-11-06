@@ -22,6 +22,7 @@ export default function Proposals({ proposals }: { proposals: Proposal[] }) {
               </div>
             </StyledLink>
             <VaultLabel>{proposal.vault.name}</VaultLabel>
+            {proposal.executed && <VaultLabel>Executed</VaultLabel>}
           </ProposalItem>
         )
       })}
@@ -43,16 +44,16 @@ const ProposalItem = styled.div`
 `
 
 const StyledLink = styled(Link)`
-  color: ${colors.green400};
+  color: ${colors.gray400};
 
   &:hover {
-    color: ${colors.green300};
+    color: ${colors.gray300};
   }
 `
 
 const VaultLabel = styled.div`
-  background-color: ${colors.gray100};
-  color: ${colors.gray400};
+  background-color: ${colors.green300};
+  color: ${colors.green400};
   padding: 2px 4px;
   border-radius: 5px;
 `
