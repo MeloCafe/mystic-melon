@@ -3,15 +3,17 @@ import { ConnectKitButton } from 'connectkit'
 import Link from 'next/link'
 
 import { colors } from '../styles/colors'
+import NetworkLogo from './NetworkLogo'
 
 export function HeaderNav() {
   return (
     <Container>
       <Left>
         <Title href="/">🍈 Melo Cafe</Title>
+        <NetworkLogo />
       </Left>
       <Right>
-        <StyledLink href="/">Vaults</StyledLink>
+        <StyledLink href="/vaults">Vaults</StyledLink>
         <StyledLink href="/">Proposals</StyledLink>
         <ConnectKitButton theme="rounded" />
       </Right>
@@ -34,7 +36,11 @@ const Container = styled.div`
   }
 `
 
-const Left = styled.div``
+const Left = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`
 
 const Right = styled.div`
   display: flex;

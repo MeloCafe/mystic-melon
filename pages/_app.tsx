@@ -1,21 +1,25 @@
 import '../styles/globals.css'
 
-import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { ConnectKitProvider } from 'connectkit'
 import type { AppProps } from 'next/app'
-import { createClient, WagmiConfig } from 'wagmi'
+import { chain, configureChains, createClient, defaultChains, WagmiConfig } from 'wagmi'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
 
 import { HeaderNav } from '../components/HeaderNav'
 import Meta from '../components/Meta'
 import { colors } from '../styles/colors'
 
-const alchemyId = process.env.ALCHEMY_ID
-
-const client = createClient(
-  getDefaultClient({
-    appName: 'gm',
-    alchemyId,
-  })
+const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID
+const { provider } = configureChains(
+  [...defaultChains, chain.goerli],
+  [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
 )
+
+const client = createClient({
+  autoConnect: true,
+  provider,
+})
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
