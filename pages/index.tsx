@@ -1,17 +1,9 @@
 import styled from '@emotion/styled'
 import Link from 'next/link'
-import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
 
 import { colors } from '../styles/colors'
 
 export default function Home() {
-  const { address } = useAccount()
-
-  useEffect(() => {
-    console.info('account is now', address)
-  }, [address])
-
   return (
     <div
       className="w-full h-full min-h-screen flex flex-col items-center"

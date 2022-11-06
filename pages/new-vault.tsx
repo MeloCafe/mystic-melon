@@ -2,13 +2,18 @@ import styled from '@emotion/styled'
 import { isAddress } from 'ethers/lib/utils'
 import { useEffect, useState } from 'react'
 import { RotatingLines } from 'react-loader-spinner'
+import { chain, useNetwork, useSigner } from 'wagmi'
 
 import NftDetails from '../components/NftDetails'
 import Input from '../components/TextInput'
+import { getFactoryContract, VERIFIER_GOERLI } from '../contracts'
 import { colors } from '../styles/colors'
 import { NftDetails as NftDetailsType } from '../types'
 
 export default function NewVault() {
+  const { data: signer, isLoading: isSignerLoading } = useSigner()
+  const chainId = useNetwork().chain ?? chain.goerli
+
   const [form, setForm] = useState({
     title: '',
     nftContractAddress: '',
@@ -16,6 +21,7 @@ export default function NewVault() {
 
   const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
   const [nftDetailsLoading, setNftDetailsLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
@@ -34,7 +40,9 @@ export default function NewVault() {
       try {
         setNftDetailsLoading(true)
 
-        const res = await fetch(`https://api.melo.cafe/collection?address=${form.nftContractAddress}`)
+        const res = await fetch(
+          `https://api.melo.cafe/collection?address=${form.nftContractAddress}&chainId=${chainId}`
+        )
         const details = await res.json()
         setNftDetails(details.collection)
       } catch (e) {
@@ -46,7 +54,30 @@ export default function NewVault() {
     fetchNftDetails()
   }, [form.nftContractAddress])
 
+  if (!signer && !isSignerLoading)
+    return (
+      <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
+        Please connect your address to continue 😎
+      </div>
+    )
+
+  if (!signer) return null
+
   const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN'
+  const contract = getFactoryContract(signer)
+
+  const onSubmit = async () => {
+    setSubmitting(true)
+    try {
+      const res = await contract.createVault(form.title, form.nftContractAddress, VERIFIER_GOERLI)
+      await res.wait()
+    } catch (e) {
+      // TODO: handle erro
+    }
+
+    setSubmitting(false)
+  }
+
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
       <FormContainer>
@@ -74,7 +105,7 @@ export default function NewVault() {
           />
         </div>
         {nftDetails && <NftDetails details={nftDetails} />}
-        <Submit disabled={submitDisabled} onClick={() => null}>
+        <Submit disabled={submitDisabled} onClick={onSubmit}>
           Submit
         </Submit>
       </FormContainer>
