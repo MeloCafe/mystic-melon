@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
-import { arrayify, formatEther } from 'ethers/lib/utils'
+import { BigNumber } from 'ethers'
+import { arrayify, formatEther, hexlify } from 'ethers/lib/utils'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { chain, useNetwork, useSigner, useSignMessage } from 'wagmi'
@@ -126,7 +127,7 @@ export default function Proposal({
         `https://api.melo.cafe/proof/governor/${proposal.vault.id}/proposal/${proposalIdWithoutVault}`
       )
       const { proof } = await proofRes.json()
-      console.log('proof', proof)
+
       const res = await vaultContract.executeProposal(
         {
           endBlock: proposal.endBlock,
