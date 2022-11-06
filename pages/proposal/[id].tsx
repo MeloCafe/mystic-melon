@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
+import { formatEther } from 'ethers/lib/utils'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { chain, useNetwork, useSignMessage } from 'wagmi'
@@ -130,7 +131,9 @@ export default function Proposal({
         {transactions.map((tx, i) => (
           <div key={i} className="flex flex-col">
             <div className="text-sm">To: {tx.to}</div>
-            <div className="text-sm">Value: {tx.value}</div>
+            <div className="text-sm">
+              Value: {tx.value} ({formatEther(tx.value)} ETH)
+            </div>
             <div className="text-sm">Data: {tx.data}</div>
             <div className="text-sm">Gas: {tx.gas}</div>
           </div>
