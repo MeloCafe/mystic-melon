@@ -13,12 +13,12 @@ export default function Home() {
       <Links>
         <StyledLink href="/new-vault">
           <ActionTitle>Create a vault</ActionTitle>
-          <MainImage>🍉</MainImage>
+          <MainImage>🍈</MainImage>
           <Description>New to Melo Cafe? Create a vault for owners of a specific NFT collection.</Description>
         </StyledLink>
         <StyledLink href="/new-proposal">
           <ActionTitle>Create a proposal</ActionTitle>
-          <MainImage>🍈</MainImage>
+          <MainImage>🍉</MainImage>
           <Description>Already have a vault? Create a proposal for eligible signers.</Description>
         </StyledLink>
       </Links>
