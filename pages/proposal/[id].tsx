@@ -3,9 +3,10 @@ import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { chain, useAccount, useNetwork, useSignMessage } from 'wagmi'
+import { chain, useNetwork, useSignMessage } from 'wagmi'
 
 import apolloClient from '../../apollo-client'
+import { useAccount } from '../../contracts'
 import { getStorageUrl } from '../../lib/ipfs'
 import { colors } from '../../styles/colors'
 import { Proposal as ProposalType } from '../../types'
@@ -112,8 +113,6 @@ export default function Proposal({
       </div>
     )
   }
-
-  console.log('eligibleVoters', eligibleVoters)
 
   return (
     <div
