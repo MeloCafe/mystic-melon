@@ -1,13 +1,13 @@
+import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
-import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { SyntheticEvent, useState } from 'react'
 
+import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
 import { colors } from '../styles/colors'
+import { Vault } from '../types'
 
-export default function NewProposal() {
-  const { address } = useAccount()
-
+export default function NewProposal({ vaults }: { vaults: Vault[] }) {
   const [form, setForm] = useState({
     title: '',
     nftContractAddress: '',
@@ -15,12 +15,18 @@ export default function NewProposal() {
     transactionTo: '',
     transactionValue: '',
   })
+  const vaultOptions = vaults.map((vault) => ({ value: vault.id, label: `${vault.name} (${vault.id})` }))
+  const [selectedVault, setSelectedVault] = useState<string | undefined>(vaultOptions?.[0].value)
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
       ...prev,
       [field]: e.target.value,
     }))
+  }
+
+  const handleOptionChange = (event: any) => {
+    setSelectedVault(event.target.value)
   }
 
   const submitDisabled =
@@ -35,13 +41,16 @@ export default function NewProposal() {
           <Input type="input" placeholder="Very cool proposal" value={form.title} onChange={onFormChange('title')} />
         </div>
         <div>
-          Only owners of this NFT address can vote:
-          <Input
-            type="input"
-            placeholder="0x123..."
-            value={form.nftContractAddress}
-            onChange={onFormChange('nftContractAddress')}
-          />
+          Only members of this Vault can vote:
+          <select value={selectedVault} onChange={handleOptionChange}>
+            {vaultOptions.map((option) => {
+              return (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              )
+            })}
+          </select>
         </div>
         <div>
           Description:
@@ -79,6 +88,25 @@ export default function NewProposal() {
   )
 }
 
+export async function getServerSideProps() {
+  const { data } = await apolloClient.query({
+    query: gql`
+      query Vaults {
+        vaults {
+          id
+          name
+        }
+      }
+    `,
+  })
+
+  return {
+    props: {
+      vaults: data.vaults,
+    },
+  }
+}
+
 const Title = styled.div`
   font-size: 24px;
   font-weight: 500;
@@ -101,6 +129,14 @@ const FormContainer = styled.div`
     &::selection {
       background: ${colors.green300};
     }
+  }
+
+  select {
+    padding: 8px;
+    background-color: white;
+    border: 2px solid ${colors.green300};
+    border-radius: 8px;
+    color: ${colors.green400};
   }
 
   @media only screen and (max-width: 900px) {
