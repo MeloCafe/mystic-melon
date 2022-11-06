@@ -123,7 +123,7 @@ export async function getServerSideProps({ query }: any) {
   return {
     props: {
       vaults: data.vaults,
-      defaultVault: query.vault_id,
+      defaultVault: query.vault_id ?? null,
     },
   }
 }
