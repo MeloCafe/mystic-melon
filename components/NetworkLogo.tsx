@@ -10,6 +10,10 @@ const CHAIN_ID_TO_COLORS: { [id: string]: { background: string; text: string } }
     background: '#FFF0FD',
     text: '#FF1BDA',
   },
+  '80001': {
+    background: '#EFE4FF',
+    text: '#914EFF',
+  },
 }
 
 export default function NetworkLogo() {

@@ -21,7 +21,7 @@ export default function Vault({ vault }: { vault: VaultType }) {
       try {
         setNftDetailsLoading(true)
 
-        const res = await fetch(`https://api.melo.cafe/collection?address=${vault.collection}&chainId=${chainId}`)
+        const res = await fetch(`https://api.melo.cafe/collection?address=${vault.collection}&chainId=${chainId.id}`)
         const details = await res.json()
         setNftDetails(details.collection)
       } catch (e) {
@@ -40,11 +40,13 @@ export default function Vault({ vault }: { vault: VaultType }) {
       </div>
     )
 
-  console.log('vault', vault)
-
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
       <Title>{vault.name}</Title>
+      <br />
+      <br />
+      For holders of NFT collection:
+      {nftDetails && <NftDetails details={nftDetails} />}
       {nftDetailsLoading && !nftDetails && (
         <RotatingLines
           visible={nftDetailsLoading}
@@ -54,7 +56,6 @@ export default function Vault({ vault }: { vault: VaultType }) {
           width="25"
         />
       )}
-      {nftDetails && <NftDetails details={nftDetails} />}
     </div>
   )
 }

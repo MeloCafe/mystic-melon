@@ -16,7 +16,7 @@ if (!alchemyId) {
 }
 
 const { chains, provider } = configureChains(
-  [...defaultChains, chain.goerli],
+  [...defaultChains, chain.goerli, chain.polygonMumbai],
   [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
 )
 

@@ -41,7 +41,7 @@ export default function NewVault() {
         setNftDetailsLoading(true)
 
         const res = await fetch(
-          `https://api.melo.cafe/collection?address=${form.nftContractAddress}&chainId=${chainId}`
+          `https://api.melo.cafe/collection?address=${form.nftContractAddress}&chainId=${chainId.id}`
         )
         const details = await res.json()
         setNftDetails(details.collection)
@@ -63,7 +63,7 @@ export default function NewVault() {
 
   if (!signer) return null
 
-  const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN'
+  const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN' || submitting
   const contract = getFactoryContract(signer)
 
   const onSubmit = async () => {
@@ -106,7 +106,16 @@ export default function NewVault() {
         </div>
         {nftDetails && <NftDetails details={nftDetails} />}
         <Submit disabled={submitDisabled} onClick={onSubmit}>
-          Submit
+          Submit{' '}
+          {submitting && (
+            <RotatingLines
+              visible={nftDetailsLoading}
+              strokeColor={colors.green400}
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="25"
+            />
+          )}
         </Submit>
       </FormContainer>
     </div>
