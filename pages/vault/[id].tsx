@@ -94,6 +94,8 @@ const Title = styled.div`
 `
 
 const ProposalsContainer = styled.div`
+  display: flex;
+  flex-flow: column;
   a:hover {
     color: ${colors.gray300};
   }
