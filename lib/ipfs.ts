@@ -12,7 +12,7 @@ const client = new Web3Storage({ token: WEB3_STORAGE_TOKEN })
 /**
  * Generates an IPFS url for a given CID.
  */
-function getStorageUrl(cid: string): string {
+export function getStorageUrl(cid: string): string {
   return `https://${cid}.ipfs.w3s.link/${PROPOSAL_BODY_PATH}`
 }
 
