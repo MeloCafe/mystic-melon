@@ -2,6 +2,7 @@ import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { isAddress } from 'ethers/lib/utils'
 import { useState } from 'react'
+import { useSigner } from 'wagmi'
 
 import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
@@ -9,6 +10,8 @@ import { colors } from '../styles/colors'
 import { Vault } from '../types'
 
 export default function NewProposal({ vaults }: { vaults: Vault[] }) {
+  const { data: signer } = useSigner()
+
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -30,7 +33,12 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
   }
 
   const submitDisabled =
-    !form.title || !selectedVault || !form.description || !isAddress(form.transactionTo) || !form.transactionValue
+    !form.title ||
+    !selectedVault ||
+    !form.description ||
+    !isAddress(form.transactionTo) ||
+    !form.transactionValue ||
+    !signer
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
@@ -82,7 +90,7 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
           />
         </div>
         <Submit disabled={submitDisabled} onClick={() => null}>
-          Submit
+          {signer ? 'Submit' : 'Connect your wallet'}
         </Submit>
       </FormContainer>
     </div>

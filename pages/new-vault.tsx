@@ -11,8 +11,8 @@ import { colors } from '../styles/colors'
 import { NftDetails as NftDetailsType } from '../types'
 
 export default function NewVault() {
-  const { data: signer, isLoading: isSignerLoading } = useSigner()
-  const chainId = useNetwork().chain ?? chain.goerli
+  const { data: signer } = useSigner()
+  const chainInfo = useNetwork().chain ?? chain.goerli
 
   const [form, setForm] = useState({
     title: '',
@@ -41,7 +41,7 @@ export default function NewVault() {
         setNftDetailsLoading(true)
 
         const res = await fetch(
-          `https://api.melo.cafe/collection?address=${form.nftContractAddress}&chainId=${chainId.id}`
+          `https://api.melo.cafe/collection?address=${form.nftContractAddress}&chainId=${chainInfo.id}`
         )
         const details = await res.json()
         setNftDetails(details.collection)
@@ -52,21 +52,14 @@ export default function NewVault() {
     }
 
     fetchNftDetails()
-  }, [form.nftContractAddress])
+  }, [form.nftContractAddress, chainInfo.id])
 
-  if (!signer && !isSignerLoading)
-    return (
-      <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
-        Please connect your address to continue 😎
-      </div>
-    )
-
-  if (!signer) return null
-
-  const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN' || submitting
-  const contract = getFactoryContract(signer)
+  const submitDisabled = !form.title || !nftDetails || nftDetails.type === 'UNKNOWN' || submitting || !signer
+  const contract = signer && getFactoryContract(signer)
 
   const onSubmit = async () => {
+    if (!contract) return
+
     setSubmitting(true)
     try {
       const res = await contract.createVault(form.title, form.nftContractAddress, VERIFIER_GOERLI)
@@ -106,16 +99,7 @@ export default function NewVault() {
         </div>
         {nftDetails && <NftDetails details={nftDetails} />}
         <Submit disabled={submitDisabled} onClick={onSubmit}>
-          Submit{' '}
-          {submitting && (
-            <RotatingLines
-              visible={nftDetailsLoading}
-              strokeColor={colors.green400}
-              strokeWidth="5"
-              animationDuration="0.75"
-              width="25"
-            />
-          )}
+          {signer ? 'Submit' : 'Connect your wallet'}
         </Submit>
       </FormContainer>
     </div>
