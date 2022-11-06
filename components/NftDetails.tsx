@@ -14,7 +14,7 @@ export default function NftDetails({ details }: Props) {
     <Container>
       <Name>{name}</Name>
       {imageUrl && <img src={imageUrl} width="200px" style={{ borderRadius: '25px' }} />}
-      <div>{description}</div>
+      {description && <div>{description}</div>}
     </Container>
   )
 }

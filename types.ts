@@ -16,6 +16,7 @@ export type Vault = {
   proposed: BigNumberish
   id: string
   name: string
+  proposals: Proposal[]
 }
 
 export type Proposal = {

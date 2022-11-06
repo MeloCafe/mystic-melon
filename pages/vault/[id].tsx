@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { RotatingLines } from 'react-loader-spinner'
 import { chain, useNetwork } from 'wagmi'
@@ -12,7 +13,7 @@ import { NftDetails as NftDetailsType, Vault as VaultType } from '../../types'
 export default function Vault({ vault }: { vault: VaultType }) {
   const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
   const [nftDetailsLoading, setNftDetailsLoading] = useState(true)
-  const chainId = useNetwork().chain ?? chain.goerli
+  const chainInfo = useNetwork().chain ?? chain.goerli
 
   useEffect(() => {
     if (!vault?.collection) return
@@ -21,7 +22,7 @@ export default function Vault({ vault }: { vault: VaultType }) {
       try {
         setNftDetailsLoading(true)
 
-        const res = await fetch(`https://api.melo.cafe/collection?address=${vault.collection}&chainId=${chainId.id}`)
+        const res = await fetch(`https://api.melo.cafe/collection?address=${vault.collection}&chainId=${chainInfo.id}`)
         const details = await res.json()
         setNftDetails(details.collection)
       } catch (e) {
@@ -31,7 +32,7 @@ export default function Vault({ vault }: { vault: VaultType }) {
     }
 
     fetchNftDetails()
-  }, [vault?.collection, chainId])
+  }, [vault?.collection, chainInfo])
 
   if (!vault)
     return (
@@ -41,29 +42,59 @@ export default function Vault({ vault }: { vault: VaultType }) {
     )
 
   return (
-    <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
-      <Title>{vault.name}</Title>
-      <br />
-      <br />
-      For holders of NFT collection:
-      {nftDetails && <NftDetails details={nftDetails} />}
-      {nftDetailsLoading && !nftDetails && (
-        <RotatingLines
-          visible={nftDetailsLoading}
-          strokeColor={colors.green400}
-          strokeWidth="5"
-          animationDuration="0.75"
-          width="25"
-        />
-      )}
+    <div
+      className="w-full h-full min-h-screen flex flex-col items-center"
+      style={{ paddingLeft: '48px', paddingRight: '48px', gap: '24px' }}
+    >
+      <div style={{ textAlign: 'center' }}>
+        <div>Vault</div>
+        <Title>{vault.name}</Title>
+      </div>
+      <VaultDetails>
+        For holders of NFT collection:
+        {nftDetails && (
+          <StyledLink href={(chainInfo?.blockExplorers?.etherscan?.url || '') + '/address/' + nftDetails.address}>
+            {nftDetails.name}
+          </StyledLink>
+        )}
+        {nftDetailsLoading && !nftDetails && (
+          <RotatingLines
+            visible={nftDetailsLoading}
+            strokeColor={colors.green400}
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="25"
+          />
+        )}
+      </VaultDetails>
+      {vault.proposals.length === 0 && <div>This vault has no proposals!</div>}
     </div>
   )
 }
 
 const Title = styled.div`
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 500;
   color: ${colors.green400};
+`
+
+const VaultDetails = styled.div`
+  display: flex;
+  flex-flow: column;
+  text-align: center;
+
+  background: ${colors.yellow100};
+  border: 2px solid ${colors.yellow400};
+  border-radius: 25px;
+  padding: 8px 20px;
+`
+
+const StyledLink = styled(Link)`
+  font-weight: 500;
+
+  &:hover {
+    color: ${colors.gray300};
+  }
 `
 
 export async function getServerSideProps({ params }: any) {
@@ -76,6 +107,12 @@ export async function getServerSideProps({ params }: any) {
           name
           proposed
           executed
+          proposals {
+            title
+            id
+            executed
+            description
+          }
         }
       }
     `,
