@@ -24,6 +24,7 @@ export default function Vaults({ vaults }: { vaults: Vault[] }) {
 
 const StyledLink = styled(Link)`
   color: ${colors.green400};
+  align-self: flex-start;
 
   &:hover {
     color: ${colors.green300};
