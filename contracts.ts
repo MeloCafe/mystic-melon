@@ -8,6 +8,7 @@ import VaultABI from './abis/vault.abi.json'
 import { FactoryAbi, VaultAbi } from './types/ethers-contracts'
 
 export const VERIFIER_GOERLI = '0xdc5e5904dc9549e2a0045885145d4009c30b600a'
+export const VERIFIER_MUMBAI = '0x16c91389c6d37605e6141211707e2de1c34b4713'
 
 export function getVaultContract(provider: Provider | Signer, address: string) {
   return new Contract(address, VaultABI, provider) as VaultAbi
