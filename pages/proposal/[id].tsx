@@ -28,7 +28,16 @@ export default function Proposal({
 }) {
   const [description, setDescription] = useState('')
   const [eligibleVoters, setEligibleVoters] = useState(null)
+  const [numVotes, setNumVotes] = useState(null)
   const chainInfo = useNetwork().chain ?? chain.goerli
+
+  const fetchNumVotes = useCallback(async () => {
+    if (!proposal) return
+
+    const votesRes = await fetch(`https://api.melo.cafe/votes?vault=${proposal.vault.id}&proposal=${proposal.id}`)
+    const { votes } = await votesRes.json()
+    setNumVotes(votes)
+  }, [setNumVotes, proposal])
 
   useEffect(() => {
     async function prepareInfo() {
@@ -42,6 +51,8 @@ export default function Proposal({
         collection: { supply },
       } = await nftRes.json()
       setEligibleVoters(supply)
+
+      fetchNumVotes()
 
       if (!proposal.description) return
 
@@ -57,7 +68,7 @@ export default function Proposal({
     }
 
     prepareInfo()
-  }, [proposal, chainInfo.id])
+  }, [proposal, chainInfo.id, fetchNumVotes])
 
   const { address } = useAccount()
 
@@ -105,7 +116,9 @@ export default function Proposal({
     } else {
       setStatusMessage('Error submitting vote! Please try again.')
     }
-  }, [proposal, address, signMessageAsync])
+
+    fetchNumVotes()
+  }, [proposal, address, signMessageAsync, fetchNumVotes])
 
   if (!proposal || !transactions) {
     return (
@@ -121,10 +134,14 @@ export default function Proposal({
       style={{ paddingLeft: '48px', paddingRight: '48px' }}
     >
       <div className="mb-2">Proposal</div>
-      <VaultDetails href={`/vault/${proposal.vault.id}`}>{proposal.vault.name}</VaultDetails>
+      <VaultLabel href={`/vault/${proposal.vault.id}`}>{proposal.vault.name}</VaultLabel>
 
-      <Title className="mt-8">{proposal.title}</Title>
-      {eligibleVoters && <div className="text-center">X/{eligibleVoters} votes</div>}
+      <Title>{proposal.title}</Title>
+      {eligibleVoters && numVotes !== null && (
+        <div className="text-center text-lg">
+          {numVotes}/{eligibleVoters} votes
+        </div>
+      )}
       <div className="max-w-prose text-center">{description}</div>
       <div className="text-lg mt-6">Transactions</div>
       <div className="mt-4">
@@ -188,16 +205,11 @@ const Title = styled.div`
   color: ${colors.green400};
 `
 
-const VaultDetails = styled(Link)`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  text-align: center;
-
-  background: ${colors.yellow100};
-  border: 2px solid ${colors.yellow400};
-  border-radius: 25px;
-  padding: 8px 20px;
+const VaultLabel = styled(Link)`
+  background-color: ${colors.gray100};
+  color: ${colors.gray400};
+  padding: 2px 4px;
+  border-radius: 5px;
 `
 
 export async function getServerSideProps({ params }: any) {
