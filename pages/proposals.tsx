@@ -12,6 +12,7 @@ export default function Proposals({ proposals }: { proposals: Proposal[] }) {
       className="w-full h-full min-h-screen flex flex-col"
       style={{ paddingLeft: '48px', paddingRight: '48px', gap: '12px' }}
     >
+      <Title>All proposals</Title>
       {proposals.map((proposal, i) => {
         return (
           <ProposalItem key={proposal.id}>
@@ -27,6 +28,12 @@ export default function Proposals({ proposals }: { proposals: Proposal[] }) {
     </div>
   )
 }
+
+const Title = styled.div`
+  font-size: 32px;
+  font-weight: 500;
+  color: ${colors.green400};
+`
 
 const ProposalItem = styled.div`
   display: flex;
