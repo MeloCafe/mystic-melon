@@ -17,3 +17,11 @@ export type Vault = {
   id: string
   name: string
 }
+
+export type Proposal = {
+  id: string
+  executed: BigNumberish
+  title: string
+  description: string
+  vault: Vault
+}
