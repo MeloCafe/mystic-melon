@@ -1,24 +1,56 @@
 import { Provider } from '@ethersproject/providers'
 import { Contract, Signer } from 'ethers'
-import { useEffect, useState } from 'react'
-import { useAccount as useWagmiAccount } from 'wagmi'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { chain, useAccount as useWagmiAccount, useNetwork } from 'wagmi'
 
 import FactoryABI from './abis/factory.abi.json'
 import VaultABI from './abis/vault.abi.json'
 import { FactoryAbi, VaultAbi } from './types/ethers-contracts'
 
-export const VERIFIER_GOERLI = '0xdc5e5904dc9549e2a0045885145d4009c30b600a'
-export const VERIFIER_MUMBAI = '0x16c91389c6d37605e6141211707e2de1c34b4713'
+const VERIFIER_GOERLI = '0xdc5e5904dc9549e2a0045885145d4009c30b600a'
+const VERIFIER_MUMBAI = '0x16c91389c6d37605e6141211707e2de1c34b4713'
 
-export const FACTORY_GOERLI = '0xB51C1ec185de4fC8a910Cb6b9bD9b2a6ce9fBC18'
-export const FACTORY_MUMBAI = '0xf54A3de5162D49098a94314eE6946807772aFA2A'
+const FACTORY_GOERLI = '0xB51C1ec185de4fC8a910Cb6b9bD9b2a6ce9fBC18'
+const FACTORY_MUMBAI = '0xf54A3de5162D49098a94314eE6946807772aFA2A'
 
-export function getVaultContract(provider: Provider | Signer, address: string) {
-  return new Contract(address, VaultABI, provider) as VaultAbi
-}
+// grab addresses and ABIs via function so we're chain-aware
+export function useContracts() {
+  const network = useNetwork().chain ?? chain.goerli
 
-export function getFactoryContract(signer: Signer) {
-  return new Contract(FACTORY_GOERLI, FactoryABI, signer) as FactoryAbi
+  const factoryAddress = useMemo(() => {
+    if (network.id === chain.polygonMumbai.id) {
+      return FACTORY_MUMBAI
+    }
+
+    return FACTORY_GOERLI
+  }, [network.id])
+
+  const verifierAddress = useMemo(() => {
+    if (network.id === chain.polygonMumbai.id) {
+      return VERIFIER_MUMBAI
+    }
+
+    return VERIFIER_GOERLI
+  }, [network.id])
+
+  const getVaultContract = useCallback((address: string, provider: Provider | Signer) => {
+    return new Contract(address, VaultABI, provider) as VaultAbi
+  }, [])
+
+  const getFactoryContract = useCallback(
+    (signer: Signer) => {
+      const address = network.id === chain.polygonMumbai.id ? FACTORY_MUMBAI : FACTORY_GOERLI
+      return new Contract(address, FactoryABI, signer) as FactoryAbi
+    },
+    [network.id]
+  )
+
+  return {
+    factoryAddress,
+    verifierAddress,
+    getFactoryContract,
+    getVaultContract,
+  }
 }
 
 // override wagmi's useAccount to work with NextJS SSR

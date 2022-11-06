@@ -6,7 +6,7 @@ import { chain, useNetwork, useSigner } from 'wagmi'
 
 import NftDetails from '../components/NftDetails'
 import Input from '../components/TextInput'
-import { getFactoryContract, VERIFIER_GOERLI } from '../contracts'
+import { useContracts } from '../contracts'
 import { colors } from '../styles/colors'
 import { NftDetails as NftDetailsType } from '../types'
 
@@ -22,6 +22,7 @@ export default function NewVault() {
   const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
   const [nftDetailsLoading, setNftDetailsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const { verifierAddress, getFactoryContract } = useContracts()
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
@@ -62,10 +63,11 @@ export default function NewVault() {
 
     setSubmitting(true)
     try {
-      const res = await contract.createVault(form.title, form.nftContractAddress, VERIFIER_GOERLI)
+      const res = await contract.createVault(form.title, form.nftContractAddress, verifierAddress)
       await res.wait()
     } catch (e) {
-      // TODO: handle erro
+      // TODO: handle error
+      console.error(e)
     }
 
     setSubmitting(false)

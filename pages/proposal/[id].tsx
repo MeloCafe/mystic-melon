@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { chain, useNetwork, useSigner, useSignMessage } from 'wagmi'
 
 import apolloClient from '../../apollo-client'
-import { getVaultContract, useAccount } from '../../contracts'
+import { useAccount, useContracts } from '../../contracts'
 import { getStorageUrl } from '../../lib/ipfs'
 import { colors } from '../../styles/colors'
 import { Proposal as ProposalType, Transaction } from '../../types'
@@ -26,6 +26,7 @@ export default function Proposal({
   const [numVotes, setNumVotes] = useState(null)
   const chainInfo = useNetwork().chain ?? chain.goerli
   const { data: signer } = useSigner()
+  const { getVaultContract } = useContracts()
 
   const proposalExecuted = proposal?.executed ?? false
 
@@ -123,7 +124,7 @@ export default function Proposal({
 
     setExecuting(true)
     try {
-      const vaultContract = getVaultContract(signer, proposal?.vault.id)
+      const vaultContract = getVaultContract(proposal?.vault.id, signer)
       const proposalIdWithoutVault = BigNumber.from(proposal.id.split('-')[1]).toHexString()
       const proofRes = await fetch(
         `https://api.melo.cafe/proof/governor/${proposal.vault.id}/proposal/${proposalIdWithoutVault}`

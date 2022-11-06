@@ -6,7 +6,7 @@ import { useProvider, useSigner } from 'wagmi'
 
 import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
-import { getVaultContract } from '../contracts'
+import { useContracts } from '../contracts'
 import { uploadText } from '../lib/ipfs'
 import { colors } from '../styles/colors'
 import { Vault } from '../types'
@@ -28,6 +28,7 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
   const [submitting, setSubmitting] = useState(false)
   const vaultOptions = vaults.map((vault) => ({ value: vault.id, label: `${vault.name} (${vault.id})` }))
   const [selectedVault, setSelectedVault] = useState<string | undefined>(defaultVault ?? vaultOptions?.[0].value)
+  const { getVaultContract } = useContracts()
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
@@ -47,7 +48,7 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
       try {
         setSubmitting(true)
         const ipfsRes = await uploadText(form.description)
-        const vaultContract = getVaultContract(signer, selectedVault)
+        const vaultContract = getVaultContract(selectedVault, signer)
         const currentBlock = await provider.getBlockNumber()
 
         const etherValue = parseEther(form.transactionValue).toString()
