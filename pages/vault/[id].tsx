@@ -76,9 +76,12 @@ export default function Vault({ vault }: { vault: VaultType }) {
           <Title>Proposals</Title>
           <ProposalsContainer>
             {vault.proposals.map((proposal, i) => (
-              <Link href={`/proposal/${proposal.id}`} key={proposal.id}>
-                {i + 1}. {proposal.title}
-              </Link>
+              <ProposalItem key={proposal.id}>
+                <Link href={`/proposal/${proposal.id}`}>
+                  {i + 1}. {proposal.title}
+                </Link>
+                {proposal.executed && <GreenLabel>Executed</GreenLabel>}
+              </ProposalItem>
             ))}
           </ProposalsContainer>
         </div>
@@ -86,6 +89,20 @@ export default function Vault({ vault }: { vault: VaultType }) {
     </div>
   )
 }
+
+const GreenLabel = styled.div`
+  background-color: ${colors.green300};
+  color: ${colors.green400};
+  padding: 2px 4px;
+  border-radius: 5px;
+`
+
+const ProposalItem = styled.div`
+  display: flex;
+  flex-flow: row;
+  gap: 8px;
+  align-items: center;
+`
 
 const Title = styled.div`
   font-size: 32px;
