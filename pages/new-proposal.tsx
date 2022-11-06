@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
-import { SyntheticEvent, useState } from 'react'
+import { useState } from 'react'
 
 import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
@@ -137,6 +137,11 @@ const FormContainer = styled.div`
     border: 2px solid ${colors.green300};
     border-radius: 8px;
     color: ${colors.green400};
+  }
+
+  select:focus {
+    outline: none;
+    border: 2px solid ${colors.green400};
   }
 
   @media only screen and (max-width: 900px) {
