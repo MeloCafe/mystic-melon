@@ -11,6 +11,10 @@ import Meta from '../components/Meta'
 import { colors } from '../styles/colors'
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID
+if (!alchemyId) {
+  throw new Error('Must specify an Alchemy ID')
+}
+
 const { provider } = configureChains(
   [...defaultChains, chain.goerli],
   [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
