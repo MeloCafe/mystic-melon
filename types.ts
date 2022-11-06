@@ -1,4 +1,4 @@
-import { BigNumberish } from 'ethers'
+import { BigNumberish, ethers } from 'ethers'
 
 export type NftDetails = {
   address: string
@@ -19,10 +19,19 @@ export type Vault = {
   proposals: Proposal[]
 }
 
+export type Transaction = {
+  to: string
+  value: string
+  data: string
+  gas: string
+}
+
 export type Proposal = {
   id: string
   executed: BigNumberish
   title: string
   description: string
   vault: Vault
+  endBlock: number
+  transactions?: Transaction[]
 }

@@ -1,35 +1,30 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
-import { formatEther } from 'ethers/lib/utils'
+import { arrayify, formatEther } from 'ethers/lib/utils'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { chain, useNetwork, useSignMessage } from 'wagmi'
+import { chain, useNetwork, useSigner, useSignMessage } from 'wagmi'
 
 import apolloClient from '../../apollo-client'
-import { useAccount } from '../../contracts'
+import { getVaultContract, useAccount } from '../../contracts'
 import { getStorageUrl } from '../../lib/ipfs'
 import { colors } from '../../styles/colors'
-import { Proposal as ProposalType } from '../../types'
+import { Proposal as ProposalType, Transaction } from '../../types'
 
 export default function Proposal({
   proposal,
   transactions,
 }: {
   proposal?: ProposalType
-  transactions:
-    | {
-        to: string
-        value: string
-        data: string
-        gas: string
-      }[]
-    | undefined
+  transactions?: Transaction[]
 }) {
   const [description, setDescription] = useState('')
   const [eligibleVoters, setEligibleVoters] = useState(null)
+  const [executing, setExecuting] = useState(false)
   const [numVotes, setNumVotes] = useState(null)
   const chainInfo = useNetwork().chain ?? chain.goerli
+  const { data: signer } = useSigner()
 
   const fetchNumVotes = useCallback(async () => {
     if (!proposal) return
@@ -120,6 +115,37 @@ export default function Proposal({
     fetchNumVotes()
   }, [proposal, address, signMessageAsync, fetchNumVotes])
 
+  const executeProposal = async () => {
+    if (!signer || !proposal) return
+
+    setExecuting(true)
+    try {
+      const vaultContract = getVaultContract(signer, proposal?.vault.id)
+      const proposalIdWithoutVault = proposal.id.split('-')[1]
+      const proofRes = await fetch(
+        `https://api.melo.cafe/proof/governor/${proposal.vault.id}/proposal/${proposalIdWithoutVault}`
+      )
+      const { proof } = await proofRes.json()
+      console.log('proof', proof)
+      const res = await vaultContract.executeProposal(
+        {
+          endBlock: proposal.endBlock,
+          title: proposal.title,
+          descriptionHash: proposal.description,
+          transactions: proposal.transactions ?? [],
+        },
+        '0x' + proof
+      )
+
+      await res.wait()
+    } catch (e) {
+      // TODO: error
+      console.log('error!', e)
+    }
+
+    setExecuting(false)
+  }
+
   if (!proposal || !transactions) {
     return (
       <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
@@ -139,7 +165,7 @@ export default function Proposal({
       <Title>{proposal.title}</Title>
       {eligibleVoters && numVotes !== null && (
         <div className="text-center text-lg">
-          {numVotes}/{eligibleVoters} votes
+          {numVotes ?? 0}/{eligibleVoters} votes
         </div>
       )}
       <div className="max-w-prose text-center">{description}</div>
@@ -166,6 +192,11 @@ export default function Proposal({
         ) : (
           <ConnectKitButton label="Connect to vote" theme="rounded" />
         )}
+        {numVotes !== null && eligibleVoters && numVotes / eligibleVoters > 0.5 && (
+          <ExecuteButton disabled={executing} className="w-full" onClick={executeProposal}>
+            {executing ? 'Executing...' : 'Execute proposal!'}
+          </ExecuteButton>
+        )}
       </div>
     </div>
   )
@@ -180,6 +211,7 @@ const VoteButton = styled.button`
   border: 3px solid ${colors.yellow400};
   font-weight: 600;
   font-size: 24px;
+  color: ${colors.green400};
 
   &:disabled {
     background-color: ${colors.gray100};
@@ -199,6 +231,12 @@ const VoteButton = styled.button`
   transition-duration: 0.2s;
 `
 
+const ExecuteButton = styled(VoteButton)`
+  background-color: ${colors.green300};
+  border: 3px solid ${colors.green400};
+  color: ${colors.green400};
+`
+
 const Title = styled.div`
   font-size: 32px;
   font-weight: 500;
@@ -206,8 +244,8 @@ const Title = styled.div`
 `
 
 const VaultLabel = styled(Link)`
-  background-color: ${colors.gray100};
-  color: ${colors.gray400};
+  background-color: ${colors.green300};
+  color: ${colors.green400};
   padding: 2px 4px;
   border-radius: 5px;
 `
@@ -223,6 +261,7 @@ export async function getServerSideProps({ params }: any) {
           description
           executedAt
           executedTx
+          endBlock
           vault {
             id
             collection

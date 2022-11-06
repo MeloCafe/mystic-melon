@@ -1,8 +1,7 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
-import { providers } from 'ethers'
 import { isAddress, parseEther } from 'ethers/lib/utils'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useProvider, useSigner } from 'wagmi'
 
 import apolloClient from '../apollo-client'
