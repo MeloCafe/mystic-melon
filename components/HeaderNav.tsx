@@ -14,7 +14,7 @@ export function HeaderNav() {
       </Left>
       <Right>
         <StyledLink href="/vaults">Vaults</StyledLink>
-        <StyledLink href="/proposals">Proposals</StyledLink>
+        <StyledLink href="/proposals">All Proposals</StyledLink>
         <ConnectKitButton theme="rounded" />
       </Right>
     </Container>

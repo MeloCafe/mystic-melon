@@ -9,6 +9,7 @@ import apolloClient from '../../apollo-client'
 import NftDetails from '../../components/NftDetails'
 import { colors } from '../../styles/colors'
 import { NftDetails as NftDetailsType, Vault as VaultType } from '../../types'
+import Proposals from '../proposals'
 
 export default function Vault({ vault }: { vault: VaultType }) {
   const [nftDetails, setNftDetails] = useState<NftDetailsType | null>(null)
@@ -68,6 +69,18 @@ export default function Vault({ vault }: { vault: VaultType }) {
         )}
       </VaultDetails>
       {vault.proposals.length === 0 && <div>This vault has no proposals!</div>}
+      {vault.proposals.length > 0 && (
+        <div className="flex flex-col items-center">
+          <Title>Proposals</Title>
+          <ProposalsContainer>
+            {vault.proposals.map((proposal, i) => (
+              <Link href={`/proposal/${proposal.id}`} key={proposal.id}>
+                {i + 1}. {proposal.title}
+              </Link>
+            ))}
+          </ProposalsContainer>
+        </div>
+      )}
     </div>
   )
 }
@@ -78,9 +91,16 @@ const Title = styled.div`
   color: ${colors.green400};
 `
 
+const ProposalsContainer = styled.div`
+  a:hover {
+    color: ${colors.gray300};
+  }
+`
+
 const VaultDetails = styled.div`
   display: flex;
   flex-flow: column;
+  align-items: center;
   text-align: center;
 
   background: ${colors.yellow100};
