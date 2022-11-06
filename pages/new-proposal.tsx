@@ -1,17 +1,22 @@
 import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
-import { isAddress } from 'ethers/lib/utils'
+import { providers } from 'ethers'
+import { isAddress, parseEther } from 'ethers/lib/utils'
 import { useCallback, useState } from 'react'
-import { useSigner } from 'wagmi'
+import { useProvider, useSigner } from 'wagmi'
 
 import apolloClient from '../apollo-client'
 import Input from '../components/TextInput'
+import { getVaultContract } from '../contracts'
 import { uploadText } from '../lib/ipfs'
 import { colors } from '../styles/colors'
 import { Vault } from '../types'
 
+const BLOCK_DEADLINE = 100
+
 export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[]; defaultVault?: string }) {
   const { data: signer } = useSigner()
+  const provider = useProvider()
 
   const [form, setForm] = useState({
     title: '',
@@ -19,6 +24,9 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
     transactionTo: '',
     transactionValue: '',
   })
+
+  const [submissionError, setSubmissionError] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const vaultOptions = vaults.map((vault) => ({ value: vault.id, label: `${vault.name} (${vault.id})` }))
   const [selectedVault, setSelectedVault] = useState<string | undefined>(defaultVault ?? vaultOptions?.[0].value)
 
@@ -30,18 +38,43 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
   }
 
   const handleOptionChange = (event: any) => {
+    setSubmissionError(false)
     setSelectedVault(event.target.value)
   }
 
-  const onUpload = useCallback(async () => {
-    // Tina here is upload stuff :D
-    // try {
-    //   const stuff = await uploadText('pls i must hear abt the melons')
-    //   console.info(stuff)
-    // } catch (err) {
-    //   console.error('Failed to upload to IPFS', err)
-    // }
-  }, [])
+  const onSubmit = () => {
+    async function submit() {
+      if (!signer || !selectedVault || !provider) return
+      try {
+        setSubmitting(true)
+        const ipfsRes = await uploadText(form.description)
+        console.log('ipfsRes', ipfsRes)
+        const vaultContract = getVaultContract(signer, selectedVault)
+        const currentBlock = await provider.getBlockNumber()
+        console.log('currentBlock', currentBlock)
+
+        const etherValue = parseEther(form.transactionValue).toString()
+        console.log('etherValue', etherValue)
+        const res = await vaultContract.propose({
+          title: form.title,
+          descriptionHash: ipfsRes.cid,
+
+          // default to Transfer transaction
+          transactions: [{ to: form.transactionTo, value: etherValue, data: '0x', gas: 27000 }],
+          endBlock: currentBlock + BLOCK_DEADLINE,
+        })
+
+        await res.wait()
+        console.log('res', res)
+      } catch (e) {
+        setSubmissionError(true)
+      }
+
+      setSubmitting(false)
+    }
+
+    submit()
+  }
 
   const submitDisabled =
     !form.title ||
@@ -49,7 +82,8 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
     !form.description ||
     !isAddress(form.transactionTo) ||
     !form.transactionValue ||
-    !signer
+    !signer ||
+    submitting
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col" style={{ paddingLeft: '48px', paddingRight: '48px' }}>
@@ -100,9 +134,10 @@ export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[];
             label="ETH"
           />
         </div>
-        <Submit disabled={submitDisabled} onClick={onUpload}>
-          {signer ? 'Submit' : 'Connect your wallet'}
+        <Submit disabled={submitDisabled} onClick={onSubmit}>
+          {signer ? (submitting ? 'Submitting' : 'Submit') : 'Connect your wallet'}
         </Submit>
+        {submissionError && <div>There was an error 🤮</div>}
       </FormContainer>
     </div>
   )
