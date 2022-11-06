@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import styled from '@emotion/styled'
 import { ConnectKitButton } from 'connectkit'
 import { BigNumber } from 'ethers'
-import { arrayify, formatEther, hexlify } from 'ethers/lib/utils'
+import { formatEther } from 'ethers/lib/utils'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { chain, useNetwork, useSigner, useSignMessage } from 'wagmi'
@@ -26,6 +26,8 @@ export default function Proposal({
   const [numVotes, setNumVotes] = useState(null)
   const chainInfo = useNetwork().chain ?? chain.goerli
   const { data: signer } = useSigner()
+
+  const proposalExecuted = proposal?.executed ?? false
 
   const fetchNumVotes = useCallback(async () => {
     if (!proposal) return
@@ -117,16 +119,20 @@ export default function Proposal({
   }, [proposal, address, signMessageAsync, fetchNumVotes])
 
   const executeProposal = async () => {
-    if (!signer || !proposal) return
+    if (!signer || !proposal || proposalExecuted) return
 
     setExecuting(true)
     try {
       const vaultContract = getVaultContract(signer, proposal?.vault.id)
-      const proposalIdWithoutVault = proposal.id.split('-')[1]
+      const proposalIdWithoutVault = BigNumber.from(proposal.id.split('-')[1]).toHexString()
       const proofRes = await fetch(
         `https://api.melo.cafe/proof/governor/${proposal.vault.id}/proposal/${proposalIdWithoutVault}`
       )
       const { proof } = await proofRes.json()
+
+      const gasLimitTotal =
+        proposal?.transactions?.reduce((total, tx) => BigNumber.from(tx.gas).add(total), BigNumber.from(0)) ??
+        BigNumber.from('100000')
 
       const res = await vaultContract.executeProposal(
         {
@@ -135,7 +141,8 @@ export default function Proposal({
           descriptionHash: proposal.description,
           transactions: proposal.transactions ?? [],
         },
-        '0x' + proof
+        '0x' + proof,
+        { gasLimit: gasLimitTotal.mul(50).toString() }
       )
 
       await res.wait()
@@ -186,15 +193,16 @@ export default function Proposal({
 
       <div className="mt-16 w-full max-w-sm flex flex-col items-center justify-center text-center">
         {statusMessage && <div className="text-sm">{statusMessage}</div>}
+        {proposalExecuted && <div style={{ color: colors.green400 }}>Proposal executed!</div>}
         {address ? (
-          <VoteButton className="w-full" onClick={submitVote}>
+          <VoteButton className="w-full" disabled={proposalExecuted} onClick={submitVote}>
             Vote
           </VoteButton>
         ) : (
           <ConnectKitButton label="Connect to vote" theme="rounded" />
         )}
         {numVotes !== null && eligibleVoters && numVotes / eligibleVoters > 0.5 && (
-          <ExecuteButton disabled={executing} className="w-full" onClick={executeProposal}>
+          <ExecuteButton disabled={executing || proposalExecuted} className="w-full" onClick={executeProposal}>
             {executing ? 'Executing...' : 'Execute proposal!'}
           </ExecuteButton>
         )}

@@ -28,7 +28,7 @@ export type Transaction = {
 
 export type Proposal = {
   id: string
-  executed: BigNumberish
+  executed: boolean
   title: string
   description: string
   vault: Vault
