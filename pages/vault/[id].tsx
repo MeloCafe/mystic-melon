@@ -68,7 +68,11 @@ export default function Vault({ vault }: { vault: VaultType }) {
           />
         )}
       </VaultDetails>
-      {vault.proposals.length === 0 && <div>This vault has no proposals!</div>}
+      {vault.proposals.length === 0 && (
+        <NoProposal>
+          This vault has no proposals yet! <Link href={`/new-proposal?vault_id=${vault.id}`}>Create a proposal.</Link>
+        </NoProposal>
+      )}
       {vault.proposals.length > 0 && (
         <div className="flex flex-col items-center">
           <Title>Proposals</Title>
@@ -94,6 +98,16 @@ const Title = styled.div`
 const ProposalsContainer = styled.div`
   a:hover {
     color: ${colors.gray300};
+  }
+`
+
+const NoProposal = styled.div`
+  a {
+    color: ${colors.green400};
+  }
+
+  a:hover {
+    color: ${colors.green300};
   }
 `
 

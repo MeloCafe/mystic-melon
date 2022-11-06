@@ -9,7 +9,7 @@ import Input from '../components/TextInput'
 import { colors } from '../styles/colors'
 import { Vault } from '../types'
 
-export default function NewProposal({ vaults }: { vaults: Vault[] }) {
+export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[]; defaultVault?: string }) {
   const { data: signer } = useSigner()
 
   const [form, setForm] = useState({
@@ -19,7 +19,7 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
     transactionValue: '',
   })
   const vaultOptions = vaults.map((vault) => ({ value: vault.id, label: `${vault.name} (${vault.id})` }))
-  const [selectedVault, setSelectedVault] = useState<string | undefined>(vaultOptions?.[0].value)
+  const [selectedVault, setSelectedVault] = useState<string | undefined>(defaultVault ?? vaultOptions?.[0].value)
 
   const onFormChange = (field: string) => (e: any) => {
     setForm((prev) => ({
@@ -97,7 +97,7 @@ export default function NewProposal({ vaults }: { vaults: Vault[] }) {
   )
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ query }: any) {
   const { data } = await apolloClient.query({
     query: gql`
       query Vaults {
@@ -112,6 +112,7 @@ export async function getServerSideProps() {
   return {
     props: {
       vaults: data.vaults,
+      defaultVault: query.vault_id,
     },
   }
 }
