@@ -51,15 +51,15 @@ export interface VaultAbiInterface extends utils.Interface {
   functions: {
     'blocksAllowedForExecution()': FunctionFragment
     'executeProposal((uint256,string,string,(address,uint256,bytes,uint256)[]),bytes)': FunctionFragment
-    'executed(bytes32)': FunctionFragment
     'maxBlocksInFuture()': FunctionFragment
     'name()': FunctionFragment
     'nft()': FunctionFragment
     'onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)': FunctionFragment
     'onERC1155Received(address,address,uint256,uint256,bytes)': FunctionFragment
     'onERC721Received(address,address,uint256,bytes)': FunctionFragment
+    'proposalBlockTimes(uint64)': FunctionFragment
+    'proposalExecuted(uint64)': FunctionFragment
     'proposalHash((uint256,string,string,(address,uint256,bytes,uint256)[]))': FunctionFragment
-    'proposals(bytes32)': FunctionFragment
     'propose((uint256,string,string,(address,uint256,bytes,uint256)[]))': FunctionFragment
     'setVerifier(address)': FunctionFragment
     'supportsInterface(bytes4)': FunctionFragment
@@ -70,15 +70,15 @@ export interface VaultAbiInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | 'blocksAllowedForExecution'
       | 'executeProposal'
-      | 'executed'
       | 'maxBlocksInFuture'
       | 'name'
       | 'nft'
       | 'onERC1155BatchReceived'
       | 'onERC1155Received'
       | 'onERC721Received'
+      | 'proposalBlockTimes'
+      | 'proposalExecuted'
       | 'proposalHash'
-      | 'proposals'
       | 'propose'
       | 'setVerifier'
       | 'supportsInterface'
@@ -90,7 +90,6 @@ export interface VaultAbiInterface extends utils.Interface {
     functionFragment: 'executeProposal',
     values: [MeloVault.ProposalStruct, PromiseOrValue<BytesLike>]
   ): string
-  encodeFunctionData(functionFragment: 'executed', values: [PromiseOrValue<BytesLike>]): string
   encodeFunctionData(functionFragment: 'maxBlocksInFuture', values?: undefined): string
   encodeFunctionData(functionFragment: 'name', values?: undefined): string
   encodeFunctionData(functionFragment: 'nft', values?: undefined): string
@@ -118,8 +117,9 @@ export interface VaultAbiInterface extends utils.Interface {
     functionFragment: 'onERC721Received',
     values: [PromiseOrValue<string>, PromiseOrValue<string>, PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
   ): string
+  encodeFunctionData(functionFragment: 'proposalBlockTimes', values: [PromiseOrValue<BigNumberish>]): string
+  encodeFunctionData(functionFragment: 'proposalExecuted', values: [PromiseOrValue<BigNumberish>]): string
   encodeFunctionData(functionFragment: 'proposalHash', values: [MeloVault.ProposalStruct]): string
-  encodeFunctionData(functionFragment: 'proposals', values: [PromiseOrValue<BytesLike>]): string
   encodeFunctionData(functionFragment: 'propose', values: [MeloVault.ProposalStruct]): string
   encodeFunctionData(functionFragment: 'setVerifier', values: [PromiseOrValue<string>]): string
   encodeFunctionData(functionFragment: 'supportsInterface', values: [PromiseOrValue<BytesLike>]): string
@@ -127,15 +127,15 @@ export interface VaultAbiInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: 'blocksAllowedForExecution', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'executeProposal', data: BytesLike): Result
-  decodeFunctionResult(functionFragment: 'executed', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'maxBlocksInFuture', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'nft', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'onERC1155BatchReceived', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'onERC1155Received', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'onERC721Received', data: BytesLike): Result
+  decodeFunctionResult(functionFragment: 'proposalBlockTimes', data: BytesLike): Result
+  decodeFunctionResult(functionFragment: 'proposalExecuted', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'proposalHash', data: BytesLike): Result
-  decodeFunctionResult(functionFragment: 'proposals', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'propose', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'setVerifier', data: BytesLike): Result
   decodeFunctionResult(functionFragment: 'supportsInterface', data: BytesLike): Result
@@ -143,8 +143,8 @@ export interface VaultAbiInterface extends utils.Interface {
 
   events: {
     'MeloVaultCreated(string,address)': EventFragment
-    'ProposalCreated(bytes32,bytes32,tuple)': EventFragment
-    'ProposalExecuted(bytes32,tuple)': EventFragment
+    'ProposalCreated(uint64,bytes32,tuple)': EventFragment
+    'ProposalExecuted(uint64,tuple)': EventFragment
   }
 
   getEvent(nameOrSignatureOrTopic: 'MeloVaultCreated'): EventFragment
@@ -161,22 +161,22 @@ export type MeloVaultCreatedEvent = TypedEvent<[string, string], MeloVaultCreate
 export type MeloVaultCreatedEventFilter = TypedEventFilter<MeloVaultCreatedEvent>
 
 export interface ProposalCreatedEventObject {
-  id: string
+  id: BigNumber
   snapshotBlockHash: string
   proposal: MeloVault.ProposalStructOutput
 }
 export type ProposalCreatedEvent = TypedEvent<
-  [string, string, MeloVault.ProposalStructOutput],
+  [BigNumber, string, MeloVault.ProposalStructOutput],
   ProposalCreatedEventObject
 >
 
 export type ProposalCreatedEventFilter = TypedEventFilter<ProposalCreatedEvent>
 
 export interface ProposalExecutedEventObject {
-  id: string
+  id: BigNumber
   proposal: MeloVault.ProposalStructOutput
 }
-export type ProposalExecutedEvent = TypedEvent<[string, MeloVault.ProposalStructOutput], ProposalExecutedEventObject>
+export type ProposalExecutedEvent = TypedEvent<[BigNumber, MeloVault.ProposalStructOutput], ProposalExecutedEventObject>
 
 export type ProposalExecutedEventFilter = TypedEventFilter<ProposalExecutedEvent>
 
@@ -207,11 +207,9 @@ export interface VaultAbi extends BaseContract {
 
     executeProposal(
       proposal: MeloVault.ProposalStruct,
-      fact: PromiseOrValue<BytesLike>,
+      proof: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>
-
-    executed(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[boolean]>
 
     maxBlocksInFuture(overrides?: CallOverrides): Promise<[BigNumber]>
 
@@ -245,9 +243,11 @@ export interface VaultAbi extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>
 
-    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<[string]>
+    proposalBlockTimes(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[BigNumber]>
 
-    proposals(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[BigNumber]>
+    proposalExecuted(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[boolean]>
+
+    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<[BigNumber]>
 
     propose(
       proposal: MeloVault.ProposalStruct,
@@ -268,11 +268,9 @@ export interface VaultAbi extends BaseContract {
 
   executeProposal(
     proposal: MeloVault.ProposalStruct,
-    fact: PromiseOrValue<BytesLike>,
+    proof: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>
-
-  executed(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>
 
   maxBlocksInFuture(overrides?: CallOverrides): Promise<BigNumber>
 
@@ -306,9 +304,11 @@ export interface VaultAbi extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>
 
-  proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<string>
+  proposalBlockTimes(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
 
-  proposals(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>
+  proposalExecuted(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+
+  proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<BigNumber>
 
   propose(
     proposal: MeloVault.ProposalStruct,
@@ -329,11 +329,9 @@ export interface VaultAbi extends BaseContract {
 
     executeProposal(
       proposal: MeloVault.ProposalStruct,
-      fact: PromiseOrValue<BytesLike>,
+      proof: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>
-
-    executed(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>
 
     maxBlocksInFuture(overrides?: CallOverrides): Promise<BigNumber>
 
@@ -367,9 +365,11 @@ export interface VaultAbi extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>
 
-    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<string>
+    proposalBlockTimes(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
 
-    proposals(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>
+    proposalExecuted(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+
+    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<BigNumber>
 
     propose(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<void>
 
@@ -381,34 +381,18 @@ export interface VaultAbi extends BaseContract {
   }
 
   filters: {
-    'MeloVaultCreated(string,address)'(
-      name?: PromiseOrValue<string> | null,
-      token?: PromiseOrValue<string> | null
-    ): MeloVaultCreatedEventFilter
-    MeloVaultCreated(
-      name?: PromiseOrValue<string> | null,
-      token?: PromiseOrValue<string> | null
-    ): MeloVaultCreatedEventFilter
+    'MeloVaultCreated(string,address)'(name?: null, token?: null): MeloVaultCreatedEventFilter
+    MeloVaultCreated(name?: null, token?: null): MeloVaultCreatedEventFilter
 
-    'ProposalCreated(bytes32,bytes32,tuple)'(
-      id?: PromiseOrValue<BytesLike> | null,
+    'ProposalCreated(uint64,bytes32,tuple)'(
+      id?: null,
       snapshotBlockHash?: null,
-      proposal?: MeloVault.ProposalStruct | null
+      proposal?: null
     ): ProposalCreatedEventFilter
-    ProposalCreated(
-      id?: PromiseOrValue<BytesLike> | null,
-      snapshotBlockHash?: null,
-      proposal?: MeloVault.ProposalStruct | null
-    ): ProposalCreatedEventFilter
+    ProposalCreated(id?: null, snapshotBlockHash?: null, proposal?: null): ProposalCreatedEventFilter
 
-    'ProposalExecuted(bytes32,tuple)'(
-      id?: PromiseOrValue<BytesLike> | null,
-      proposal?: MeloVault.ProposalStruct | null
-    ): ProposalExecutedEventFilter
-    ProposalExecuted(
-      id?: PromiseOrValue<BytesLike> | null,
-      proposal?: MeloVault.ProposalStruct | null
-    ): ProposalExecutedEventFilter
+    'ProposalExecuted(uint64,tuple)'(id?: null, proposal?: null): ProposalExecutedEventFilter
+    ProposalExecuted(id?: null, proposal?: null): ProposalExecutedEventFilter
   }
 
   estimateGas: {
@@ -416,11 +400,9 @@ export interface VaultAbi extends BaseContract {
 
     executeProposal(
       proposal: MeloVault.ProposalStruct,
-      fact: PromiseOrValue<BytesLike>,
+      proof: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>
-
-    executed(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>
 
     maxBlocksInFuture(overrides?: CallOverrides): Promise<BigNumber>
 
@@ -454,9 +436,11 @@ export interface VaultAbi extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>
 
-    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<BigNumber>
+    proposalBlockTimes(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
 
-    proposals(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>
+    proposalExecuted(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<BigNumber>
 
     propose(
       proposal: MeloVault.ProposalStruct,
@@ -478,11 +462,9 @@ export interface VaultAbi extends BaseContract {
 
     executeProposal(
       proposal: MeloVault.ProposalStruct,
-      fact: PromiseOrValue<BytesLike>,
+      proof: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>
-
-    executed(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>
 
     maxBlocksInFuture(overrides?: CallOverrides): Promise<PopulatedTransaction>
 
@@ -516,9 +498,11 @@ export interface VaultAbi extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>
 
-    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<PopulatedTransaction>
+    proposalBlockTimes(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>
 
-    proposals(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>
+    proposalExecuted(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+    proposalHash(proposal: MeloVault.ProposalStruct, overrides?: CallOverrides): Promise<PopulatedTransaction>
 
     propose(
       proposal: MeloVault.ProposalStruct,

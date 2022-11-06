@@ -32,13 +32,13 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: 'string',
         name: 'name',
         type: 'string',
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: 'address',
         name: 'token',
         type: 'address',
@@ -51,10 +51,10 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: 'bytes32',
+        indexed: false,
+        internalType: 'uint64',
         name: 'id',
-        type: 'bytes32',
+        type: 'uint64',
       },
       {
         indexed: false,
@@ -107,7 +107,7 @@ const _abi = [
             type: 'tuple[]',
           },
         ],
-        indexed: true,
+        indexed: false,
         internalType: 'struct MeloVault.Proposal',
         name: 'proposal',
         type: 'tuple',
@@ -120,10 +120,10 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: 'bytes32',
+        indexed: false,
+        internalType: 'uint64',
         name: 'id',
-        type: 'bytes32',
+        type: 'uint64',
       },
       {
         components: [
@@ -170,7 +170,7 @@ const _abi = [
             type: 'tuple[]',
           },
         ],
-        indexed: true,
+        indexed: false,
         internalType: 'struct MeloVault.Proposal',
         name: 'proposal',
         type: 'tuple',
@@ -245,32 +245,13 @@ const _abi = [
       },
       {
         internalType: 'bytes',
-        name: 'fact',
+        name: 'proof',
         type: 'bytes',
       },
     ],
     name: 'executeProposal',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    name: 'executed',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -427,6 +408,44 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    name: 'proposalBlockTimes',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    name: 'proposalExecuted',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         components: [
           {
             internalType: 'uint256',
@@ -479,31 +498,12 @@ const _abi = [
     name: 'proposalHash',
     outputs: [
       {
-        internalType: 'bytes32',
+        internalType: 'uint64',
         name: '',
-        type: 'bytes32',
+        type: 'uint64',
       },
     ],
     stateMutability: 'pure',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    name: 'proposals',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
