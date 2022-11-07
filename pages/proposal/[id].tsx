@@ -262,6 +262,7 @@ const VaultLabel = styled(Link)`
 
 export async function getServerSideProps({ params }: any) {
   const { data } = await apolloClient.query({
+    fetchPolicy: 'no-cache',
     query: gql`
       query Proposal($id: String!) {
         proposal(id: $id) {

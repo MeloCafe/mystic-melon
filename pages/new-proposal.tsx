@@ -11,7 +11,7 @@ import { uploadText } from '../lib/ipfs'
 import { colors } from '../styles/colors'
 import { Vault } from '../types'
 
-const BLOCK_DEADLINE = 100
+const BLOCK_DEADLINE = 5
 
 export default function NewProposal({ vaults, defaultVault }: { vaults: Vault[]; defaultVault?: string }) {
   const { data: signer } = useSigner()

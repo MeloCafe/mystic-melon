@@ -33,6 +33,7 @@ const StyledLink = styled(Link)`
 
 export async function getServerSideProps() {
   const { data } = await apolloClient.query({
+    fetchPolicy: 'no-cache',
     query: gql`
       query Vaults {
         vaults {

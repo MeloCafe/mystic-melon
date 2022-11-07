@@ -60,6 +60,7 @@ const VaultLabel = styled.div`
 
 export async function getServerSideProps() {
   const { data } = await apolloClient.query({
+    fetchPolicy: 'no-cache',
     query: gql`
       query Proposals {
         proposals {
